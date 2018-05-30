@@ -11,25 +11,6 @@ peakvalues <- function(x, pstart, pstop) {
   else return(c(max(region[,2], na.rm=TRUE), region[which.max(region[,2]),1]))
 }
 
-#Create data frame of basecalls
-basecalldf <- function(obj) {
-  primary <- strsplit(toupper(primarySeq(obj, string=TRUE)), "")[[1]]
-  secondary <- strsplit(toupper(secondarySeq(obj, string=TRUE)), "")[[1]]
-  basecalls <- data.frame(primary=primary, 
-                          secondary=secondary, 
-                          stringsAsFactors=FALSE)
-  basecalls$primary <- unname(IUPAC_CODE_MAP[basecalls$primary])
-  basecalls$secondary <- unname(IUPAC_CODE_MAP[basecalls$secondary])
-  basecalls$consensus <- basecalls$primary
-  basecalls$consensus[basecalls$primary != basecalls$secondary 
-                      | nchar(basecalls$consensus) > 1] <- "N"
-  basecalls$possibilities <- basecalls$consensus
-  basecalls$possibilities[basecalls$possibilities == "N"] <- 
-    paste0(basecalls$primary[basecalls$possibilities == "N"], 
-           basecalls$secondary[basecalls$possibilities == "N"])
-  return(basecalls)
-}
-
 
 #functions for converting binary data into numbers/text
 RTC <- function(x, ...) {

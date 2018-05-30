@@ -150,7 +150,7 @@ setGeneric("chromatogram",
 #'               start = 30, 
 #'               width = 500)
 #' #Set the phase
-#' hetseqalleles <- setAllelePhase(hetcalls, ref, trim5 = 50, trim3 = 100)
+#' hetseqalleles <- setAllelePhase(hetcalls, ref, trim5 = 50, trim3 = 100, as.is = FALSE)
 #' #Align to compare alleles
 #' pa <- pairwiseAlignment(primarySeq(hetseqalleles), 
 #'                                    secondarySeq(hetseqalleles), 
@@ -160,7 +160,7 @@ setGeneric("chromatogram",
 #' @export
 
 setGeneric("setAllelePhase", 
-           function(obj, refseq, trim5=0, trim3=0) {
+           function(obj, refseq, trim5 = 0, trim3 = 0, asIs = FALSE) {
              standardGeneric("setAllelePhase")
            }
            )

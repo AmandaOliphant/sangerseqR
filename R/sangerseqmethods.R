@@ -195,86 +195,71 @@ setMethod("chromatogram", "sangerseq",
     traces <- obj@traceMatrix
     basecalls1 <- unlist(strsplit(toString(obj@primarySeq), ""))
     basecalls2 <- unlist(strsplit(toString(obj@secondarySeq), ""))
-    aveposition <- rowMeans(obj@peakPosMatrix, na.rm=TRUE)
-    basecalls1 <- basecalls1[1:length(aveposition)] 
-    basecalls2 <- basecalls2[1:length(aveposition)] 
+    averagePosition <- rowMeans(obj@peakPosMatrix, na.rm=TRUE)
+    basecalls1 <- basecalls1[1:length(averagePosition)] 
+    basecalls2 <- basecalls2[1:length(averagePosition)] 
+    
     if(showtrim == FALSE) {
-      if(trim5+trim3 > length(basecalls1)) basecalls1 <- ""
-      else basecalls1 <- basecalls1[(1 + trim5):(length(basecalls1) - trim3)]
-      if(trim5+trim3 > length(basecalls2)) basecalls2 <- ""
-      else basecalls2 <- basecalls2[(1 + trim5):(length(basecalls2) - trim3)]
-      aveposition <- aveposition[(1 + trim5):(length(aveposition) - trim3)] 
+      trimResult <- removeTrim(basecalls1, basecalls2, trim5, trim3)
+      basecalls1 <- trimResult[["basecalls1"]]
+      basecalls2 <- trimResult[["basecalls2"]]
+      averagePosition <- averagePosition[(1 + trim5):(length(averagePosition) - trim3)] 
     }
-    indexes <- 1:length(basecalls1)
-    trimmed <- indexes <= trim5 | indexes > (length(basecalls1) - trim3) # all 
-                                                         #false if not trimmed
-    if (!is.null(trim3)) {
-      traces <- traces[1:(min(max(aveposition, na.rm=TRUE) + 10, 
-                              nrow(traces))), ]
-    }
-    if (!is.null(trim5)) {
-      offset <- max(c(1, aveposition[1] - 10))
-      traces <- traces[offset:nrow(traces),]
-      aveposition <- aveposition - (offset-1)
-    }
-    maxsignal <- apply(traces, 1, max)
-    ylims <- c(0, quantile(maxsignal, .75)+ylim*IQR(maxsignal))           
-    p <- c(0, aveposition, nrow(traces))
-    midp <- diff(p)/2
-    starts <- aveposition - midp[1:(length(midp)-1)]
-    starthets <- starts
-    starthets[basecalls1 == basecalls2] <- NA
-    ends <- aveposition + midp[2:(length(midp))]
-    endhets <- ends
-    endhets[basecalls1 == basecalls2] <- NA
-    starttrims <- starts
-    starttrims[!trimmed] <- NA
-    endtrims <- ends
-    endtrims[!trimmed] <- NA
     
-    colortranslate <- c(A="green", C="blue", G="black", T="red")
-    colorvector1 <- unname(colortranslate[basecalls1])
-    colorvector1[is.na(colorvector1)] <- "purple"
-    colorvector2 <- unname(colortranslate[basecalls2])
-    colorvector2[is.na(colorvector2)] <- "purple"
+    settings <- makeSettings(basecalls1, basecalls2, trim5, trim3, 
+                             averagePosition, traces, ylim, width)
     
-    valuesperbase <- nrow(traces)/length(basecalls1)
-    tracewidth <- width*valuesperbase
-    breaks <- seq(1,nrow(traces), by=tracewidth)
-    numplots <- length(breaks)
-    if(!is.null(filename)) pdf(filename, width=8.5, height=height*numplots) 
-    par(mar=c(2,2,2,1), mfrow=c(numplots, 1))
+    traces <- settings[["traces"]]
+    basecalls1 <- settings[["basecalls1"]] 
+    basecalls2 <- settings[["basecalls2"]]
+    averagePosition <- settings[["averagePosition"]]
+    ylims <- settings[["ylims"]]
+    startTrims <- settings[["startTrims"]]
+    endTrims <- settings[["endTrims"]] 
+    startHets <- settings[["startHets"]]
+    endHets <- settings[["endHets"]]
+    colorVector1 <- settings[["colorVector1"]] 
+    colorVector2 <- settings[["colorVector2"]]
+    traceWidth <- settings[["traceWidth"]]
+    breaks <- settings[["breaks"]]
+    numPlots <- settings[["numPlots"]]
+    
+    if(!is.null(filename)) {
+      pdf(filename, width=8.5, height=height*numPlots)
+    }
+    par(mar=c(2,2,2,1), mfrow=c(numPlots, 1))
     basecallwarning1 = 0
     basecallwarning2 = 0
     j = 1
     
     for(i in breaks) {
-      range <- aveposition >= i & aveposition < (i+tracewidth)
-      starthet <- starthets[range] - tracewidth*(j-1)
-      starthet[starthet < 0] <- 0
-      endhet <- endhets[range] - tracewidth*(j-1)
-      endhet[endhet > tracewidth] <- tracewidth
+      
+      range <- averagePosition >= i & averagePosition < (i+traceWidth)
+      startHet <- startHets[range] - traceWidth*(j-1)
+      startHet[startHet < 0] <- 0
+      endHet <- endHets[range] - traceWidth*(j-1)
+      endHet[endHet > traceWidth] <- traceWidth
       lab1 <- basecalls1[range]
       lab2 <- basecalls2[range]
-      pos <- aveposition[range] - tracewidth*(j-1)
-      colors1 <- colorvector1[range]
-      colors2 <- colorvector2[range]
-      starttrim <- starttrims[range] - tracewidth*(j-1)
-      endtrim <- endtrims[range] - tracewidth*(j-1)
-      plotrange <- i:min(i+tracewidth, nrow(traces))
-      plot(traces[plotrange,1], type='n', ylim=ylims, ylab="", xaxt="n", 
-           bty="n", xlab="", yaxt="n", , xlim=c(1,tracewidth))
+      pos <- averagePosition[range] - traceWidth*(j-1)
+      colors1 <- colorVector1[range]
+      colors2 <- colorVector2[range]
+      startTrim <- startTrims[range] - traceWidth*(j-1)
+      endTrim <- endTrims[range] - traceWidth*(j-1)
+      plotRange <- i:min(i+traceWidth, nrow(traces))
+      plot(traces[plotRange,1], type='n', ylim=ylims, ylab="", xaxt="n", 
+           bty="n", xlab="", yaxt="n", , xlim=c(1,traceWidth))
       if (showhets==TRUE) {
-        rect(starthet, 0, endhet, ylims[2], col='#D5E3F7', border='#D5E3F7')
+        rect(startHet, 0, endHet, ylims[2], col='#D5E3F7', border='#D5E3F7')
       }
       if (showtrim==TRUE) {
-        rect(starttrim, 0, endtrim, ylims[2], col='red', border='transparent', 
+        rect(startTrim, 0, endTrim, ylims[2], col='red', border='transparent', 
              density=15)
       }
-      lines(traces[plotrange,1], col="green")
-      lines(traces[plotrange,2], col="blue")
-      lines(traces[plotrange,3], col="black")
-      lines(traces[plotrange,4], col="red")
+      lines(traces[plotRange,1], col="green")
+      lines(traces[plotRange,2], col="blue")
+      lines(traces[plotRange,3], col="black")
+      lines(traces[plotRange,4], col="red")
       mtext(as.character(which(range)[1]), side=2, line=0, cex=cex.mtext)
       
       for(k in 1:length(lab1)) {
@@ -302,6 +287,7 @@ setMethod("chromatogram", "sangerseq",
       }
       j = j + 1
     }
+    
     if(!is.null(filename)) {
       dev.off()
       cat(paste("Chromatogram saved to", filename, 
@@ -313,74 +299,29 @@ setMethod("chromatogram", "sangerseq",
 
 #' @rdname setAllelePhase
 setMethod("setAllelePhase", "sangerseq",
-  function(obj, refseq, trim5=0, trim3=0) {
+  function(obj, refseq, trim5 = 0, trim3 = 0, asIs = FALSE) {
+    
+    if (!asIs) {
+      obj <- makeBaseCalls(obj)
+    }
+    
     refseq <- DNAString(refseq)
     basecalls <- basecalldf(obj)
-      
-    seedseq <- paste(basecalls$consensus[(trim5+1):(nrow(basecalls)-trim3)], 
-                     collapse="")
+    
+    refstrandresult <- determinerefstrand(refseq, basecalls, trim5, trim3)
+    refstrand <- refstrandresult[["refstrand"]]
+    pairwisealigned <- refstrandresult[["pa"]]
 
-    pa <- pairwiseAlignment(seedseq, refseq, type="local", 
-                           gapOpening=-200, gapExtension=-10)
-    paRC <- pairwiseAlignment(seedseq, reverseComplement(DNAString(refseq)), 
-                             type="local", gapOpening=-200, gapExtension=-10)
-    refstrand <- "Reference"
-    if(score(paRC) > score(pa)) {
-      refseq <- toString(reverseComplement(refseq))
-      pa <- paRC
-      refstrand <- "Reference (revcomp)"
-    }
-    if(pa@pattern@range@width < 10) {
+    #This picks the longest continuous alignment range
+    if(pairwisealigned@pattern@range@width < 10) {
       stop("Seed length not long enough. Must provide at least 10 bases of good 
            matching sequence.")
     }
-    refvector <- strsplit(toString(refseq), "")[[1]]
-    seqstart <- pa@pattern@range@start 
-    refstart <- pa@subject@range@start
-    startoffset <- refstart - seqstart - trim5
-    if (startoffset < 0)  {
-      refvector <- c(rep("N", abs(startoffset)), refvector)
-      startoffset <- 0
-    }
-    end <- nrow(basecalls) + startoffset
-    if (end > length(refvector)) {
-      refvector <- c(refvector, rep("N", end-length(refvector)))
-    }
-    if ((refstart - seqstart - trim5) < 0 | end > length(refvector)) {
-      warning("Reference sequence does not encompass sequencing results. 
-        Ambiguous bases will be attributed to both alleles outside the region 
-        covered by the reference sequence.\n")
-    }  
-    basecalls$ref <- refvector[(startoffset + 1):end]
-    basecalls$noref <- apply(basecalls, 1, 
-                             function(x) gsub(paste("[", x[5], "]"), "", x[4]))
-    #if removing reference did not change nchar, then we still don't know so put
-    #sequenced base or bases for both
-    refNotOption <- nchar(basecalls$noref) == nchar(basecalls$possibilities)
-    basecalls$newprimary[refNotOption] <- 
-      basecalls$possibilities[refNotOption]
-    basecalls$newsecondary[refNotOption] <- 
-      basecalls$possibilities[refNotOption]
-    #if not equal then ref goes in primary and noref (i.e. other(s)) goes in
-    #secondary
-    refNotOnlyOption <- nchar(basecalls$noref) != nchar(basecalls$possibilities)
-    basecalls$newprimary[refNotOnlyOption] <- 
-      basecalls$ref[refNotOnlyOption]
-    basecalls$newsecondary[refNotOnlyOption] <- 
-      basecalls$noref[refNotOnlyOption]
-    #finally, if ref was only base, then secondary now has empty string. Replace
-    #with ref
-    refOnlyOption <- nchar(basecalls$newsecondary) == 0
-    basecalls$newsecondary[refOnlyOption] <- basecalls$ref[refOnlyOption]
     
-    #Update Sangerseq Obj
-    obj@primarySeqID <- refstrand
-    primaryseq <- paste0(mergeIUPACLetters(basecalls$newprimary), collapse="")
-    primarySeq(obj) <- DNAString(primaryseq)
-    obj@secondarySeqID <- paste("NonReference")
-    secondaryseq <- paste0(mergeIUPACLetters(basecalls$newsecondary), 
-                           collapse="")
-    secondarySeq(obj) <- DNAString(secondaryseq)
+    basecalls <- accountforstartoffset(refseq, pairwisealigned, basecalls, trim5)
+    basecalls <- updateprimarysecondary(basecalls)
+    
+    obj <- updatesangerseqobj(obj, refstrand, basecalls)
     return(obj)
   }
 )
