@@ -17,7 +17,7 @@ basecalldf <- function(obj) {
   return(basecalls)
 }
 
-updateprimarysecondary <- function(obj) {
+updatePrimarySecondary <- function(obj) {
   
   obj$noref <- apply(obj, 1, function(x) gsub(paste("[", x[5], "]"), "", x[4]))
   #if removing reference did not change nchar, then we still don't know so put
@@ -43,61 +43,61 @@ updateprimarysecondary <- function(obj) {
 }
 
 
-determinerefstrand <- function(refseq, basecalls, trim5, trim3) {
+determineRefStrand <- function(refSeq, basecalls, trim5, trim3) {
   
-  seedseq <- paste(basecalls$consensus[(trim5+1):(nrow(basecalls)-trim3)], 
+  seedSeq <- paste(basecalls$consensus[(trim5+1):(nrow(basecalls)-trim3)], 
                    collapse="")
   
-  pa <- pairwiseAlignment(seedseq, refseq, type="local", 
+  pa <- pairwiseAlignment(seedSeq, refSeq, type="local", 
                           gapOpening=-200, gapExtension=-10)
-  paRC <- pairwiseAlignment(seedseq, reverseComplement(DNAString(refseq)), 
+  paRC <- pairwiseAlignment(seedSeq, reverseComplement(DNAString(refSeq)), 
                             type="local", gapOpening=-200, gapExtension=-10)
-  refstrand <- "Reference"
+  refStrand <- "Reference"
   if(score(paRC) > score(pa)) {
-    refseq <- toString(reverseComplement(refseq))
+    refSeq <- toString(reverseComplement(refSeq))
     pa <- paRC
-    refstrand <- "Reference (revcomp)"
+    refStrand <- "Reference (revcomp)"
   }
   
-  return(list(refstrand = refstrand, pa = pa))
+  return(list(refStrand = refStrand, pa = pa))
 }
 
 
-accountforstartoffset <- function(refseq, pa, basecalls, trim5) {
+accountForStartOffset <- function(refSeq, pa, basecalls, trim5) {
   
-  refvector <- strsplit(toString(refseq), "")[[1]]
-  seqstart <- pa@pattern@range@start 
-  refstart <- pa@subject@range@start
-  startoffset <- refstart - seqstart - trim5
-  if (startoffset < 0)  {
-    refvector <- c(rep("N", abs(startoffset)), refvector)
-    startoffset <- 0
+  refVector <- strsplit(toString(refSeq), "")[[1]]
+  seqStart <- pa@pattern@range@start 
+  refStart <- pa@subject@range@start
+  startOffset <- refStart - seqStart - trim5
+  if (startOffset < 0)  {
+    refVector <- c(rep("N", abs(startOffset)), refVector)
+    startOffset <- 0
   }
-  end <- nrow(basecalls) + startoffset
-  if (end > length(refvector)) {
-    refvector <- c(refvector, rep("N", end-length(refvector)))
+  end <- nrow(basecalls) + startOffset
+  if (end > length(refVector)) {
+    refVector <- c(refVector, rep("N", end-length(refVector)))
   }
-  if ((refstart - seqstart - trim5) < 0 | end > length(refvector)) {
+  if ((refStart - seqStart - trim5) < 0 | end > length(refVector)) {
     warning("Reference sequence does not encompass sequencing results. 
             Ambiguous bases will be attributed to both alleles outside the region 
             covered by the reference sequence.\n")
   }  
   
-  basecalls$ref <- refvector[(startoffset + 1):end]
+  basecalls$ref <- refVector[(startOffset + 1):end]
   
   return(basecalls)
 }
 
 
-updatesangerseqobj <- function(obj, refstrand, basecalls) {
+updateSangerSeqObj <- function(obj, refStrand, basecalls) {
   
   #Update Sangerseq Obj
-  obj@primarySeqID <- refstrand
-  primaryseq <- paste0(mergeIUPACLetters(basecalls$newprimary), collapse="")
-  primarySeq(obj) <- DNAString(primaryseq)
+  obj@primarySeqID <- refStrand
+  primarySeq <- paste0(mergeIUPACLetters(basecalls$newprimary), collapse="")
+  primarySeq(obj) <- DNAString(primarySeq)
   obj@secondarySeqID <- paste("NonReference")
-  secondaryseq <- paste0(mergeIUPACLetters(basecalls$newsecondary), 
+  secondarySeq <- paste0(mergeIUPACLetters(basecalls$newsecondary), 
                          collapse="")
-  secondarySeq(obj) <- DNAString(secondaryseq)
+  secondarySeq(obj) <- DNAString(secondarySeq)
   return(obj)
 }

@@ -17,7 +17,6 @@ removeTrim <- function(basecalls1, basecalls2, trim5, trim3) {
   return(list(basecalls1 = basecalls1, basecalls2 = basecalls2))
 }
 
-
 makeSettings <- function(basecalls1, basecalls2, trim5, trim3, 
                          averagePosition, traces, ylim, width) {
   
@@ -66,3 +65,4 @@ makeSettings <- function(basecalls1, basecalls2, trim5, trim3,
               endHets = endHets, colorVector1 = colorVector1, colorVector2 = colorVector2,
               traceWidth = traceWidth, breaks = breaks, numPlots = numPlots))
 }
+

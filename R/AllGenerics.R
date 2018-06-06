@@ -160,7 +160,7 @@ setGeneric("chromatogram",
 #' @export
 
 setGeneric("setAllelePhase", 
-           function(obj, refseq, trim5 = 0, trim3 = 0, asIs = FALSE) {
+           function(obj, refSeq, trim5 = 0, trim3 = 0, asIs = FALSE) {
              standardGeneric("setAllelePhase")
            }
            )

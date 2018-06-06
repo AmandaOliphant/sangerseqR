@@ -22,72 +22,30 @@ setMethod("show", "sangerseq",
 setMethod("sangerseq", "abif", 
   function(obj) {
     res <- new("sangerseq")
-    tracematrix <- matrix(c(obj@data$DATA.9, 
-                            obj@data$DATA.10, 
-                            obj@data$DATA.11, 
-                            obj@data$DATA.12), 
-                          ncol=4)
-    orderedmatrix <- cbind(tracematrix[,regexpr("A", obj@data$FWO_.1)[1]],
-                           tracematrix[,regexpr("C", obj@data$FWO_.1)[1]],
-                           tracematrix[,regexpr("G", obj@data$FWO_.1)[1]],
-                           tracematrix[,regexpr("T", obj@data$FWO_.1)[1]]
-    )
+
+    orderedMatrix <- makeOrderedMatrix(obj)
     
-
-    #check for valid chars
-    basecalls1 <- strsplit(obj@data$PBAS.2, "")[[1]]
-    basecalls1 <- paste0(basecalls1[basecalls1 %in% DNA_ALPHABET], 
-                         collapse = "")
-    if (nchar(basecalls1) != nchar(obj@data$PBAS.2)) {
-      warning("Invalid characters removed from primary basecalls. This may result
-                in basecalls being shifted. Please check chromatogram.")
-    }
-    #Appears normal to have them not match
-    #if (nchar(basecalls1) != length(obj@data$PLOC.2)) {
-    #  warning("Number of primary basecalls does not match the number of peaks. Please
-    #          check chromatogram.")
-    #}
-
-    basecalls1 <- DNAString(substr(basecalls1,1,length(obj@data$PLOC.2)))
+    basecalls1 = getBasecalls(obj@data$PBAS.2, obj@data$PLOC.2)
     basecallpositions1 <- obj@data$PLOC.2 + 1
+    
     if(!is.null(obj@data$P2BA.1)) {
-      basecalls2 <- strsplit(obj@data$P2BA.1, "")[[1]]
-      basecalls2 <- paste0(basecalls2[basecalls2 %in% DNA_ALPHABET], 
-                           collapse = "")
-      if (nchar(basecalls2) != nchar(obj@data$P2BA.1)) {
-        warning("Invalid characters removed from secondary basecalls. This may 
-                result in basecalls being shifted. Please check chromatogram.")
-      }
-      #Appears normal to have them not match
-      #if (nchar(basecalls2) != length(obj@data$PLOC.2)) {
-      #  warning("Number of secondary basecalls does not match the number of peaks. Please
-      #        check chromatogram.")
-      #}
-      basecalls2 <- DNAString(substr(basecalls2,1,length(obj@data$PLOC.2)))
+      basecalls2 = getBasecalls(obj@data$P2BA.1, obj@data$PLOC.2)
       basecallpositions2 <-obj@data$PLOC.2 + 1
-    } else {
+    } 
+    else {
       basecalls2 <- DNAString("")
       basecallpositions2 <- NA
     }
-    if(!is.null(obj@data$P1AM.1)) {
-      peakamps1 <- obj@data$P1AM.1
-    } else {
-      peakamps1 <- NA
-    }
-    if(!is.null(obj@data$P2AM.1)) {
-      peakamps2 <- obj@data$P2AM.1
-    } else {
-      peakamps2 <- NA
-    }
+    
     res@primarySeqID <- "From ab1 file"
     res@primarySeq <- basecalls1
     res@secondarySeqID <- "From ab1 file"
     res@secondarySeq <- basecalls2
-    res@traceMatrix <- orderedmatrix
+    res@traceMatrix <- orderedMatrix
+    res@peakAmpMatrix <- makePeakAmpMatrix(obj)
     res@peakPosMatrix <- cbind(basecallpositions1, basecallpositions2, 
                                NA, NA, deparse.level=0)
-    res@peakAmpMatrix <- cbind(peakamps1, peakamps2, NA, NA, 
-                               deparse.level=0)
+    
     return(res)
   }
 )
@@ -299,29 +257,29 @@ setMethod("chromatogram", "sangerseq",
 
 #' @rdname setAllelePhase
 setMethod("setAllelePhase", "sangerseq",
-  function(obj, refseq, trim5 = 0, trim3 = 0, asIs = FALSE) {
+  function(obj, refSeq, trim5 = 0, trim3 = 0, asIs = FALSE) {
     
     if (!asIs) {
       obj <- makeBaseCalls(obj)
     }
     
-    refseq <- DNAString(refseq)
+    refSeq <- DNAString(refSeq)
     basecalls <- basecalldf(obj)
     
-    refstrandresult <- determinerefstrand(refseq, basecalls, trim5, trim3)
-    refstrand <- refstrandresult[["refstrand"]]
-    pairwisealigned <- refstrandresult[["pa"]]
+    refStrandResult <- determineRefStrand(refSeq, basecalls, trim5, trim3)
+    refStrand <- refStrandResult[["refStrand"]]
+    pairwiseAligned <- refStrandResult[["pa"]]
 
     #This picks the longest continuous alignment range
-    if(pairwisealigned@pattern@range@width < 10) {
+    if(pairwiseAligned@pattern@range@width < 10) {
       stop("Seed length not long enough. Must provide at least 10 bases of good 
            matching sequence.")
     }
     
-    basecalls <- accountforstartoffset(refseq, pairwisealigned, basecalls, trim5)
-    basecalls <- updateprimarysecondary(basecalls)
+    basecalls <- accountForStartOffset(refSeq, pairwiseAligned, basecalls, trim5)
+    basecalls <- updatePrimarySecondary(basecalls)
     
-    obj <- updatesangerseqobj(obj, refstrand, basecalls)
+    obj <- updateSangerSeqObj(obj, refStrand, basecalls)
     return(obj)
   }
 )
