@@ -142,18 +142,52 @@ setMethod("makeBaseCalls", "sangerseq",
   }
 )
 
+setMethod("chromatogram", "character",
+          function(obj, trim5=0, trim3=0, 
+                   showcalls=c("primary", "secondary", "both", "none"), 
+                   width=100, height=2, cex.mtext=1, cex.base=1, ylim=3, 
+                   filename=NULL, showtrim=FALSE, showhets=TRUE) {
+            newSangerSeq <- readsangerseq(obj)
+            chromatogram(newSangerSeq)
+          }
+)
+
+setMethod("chromatogram", "abif",
+  function(obj, trim5=0, trim3=0, 
+          showcalls=c("primary", "secondary", "both", "none"), 
+          width=100, height=2, cex.mtext=1, cex.base=1, ylim=3, 
+          filename=NULL, showtrim=FALSE, showhets=TRUE) {
+    newSangerSeq <- sangerseq(obj)
+    chromatogram(newSangerSeq)
+  }
+)
+
+setMethod("chromatogram", "scf",
+          function(obj, trim5=0, trim3=0, 
+                   showcalls=c("primary", "secondary", "both", "none"), 
+                   width=100, height=2, cex.mtext=1, cex.base=1, ylim=3, 
+                   filename=NULL, showtrim=FALSE, showhets=TRUE) {
+            newSangerSeq <- sangerseq(obj)
+            chromatogram(newSangerSeq)
+          }
+)
+
+
 #' @rdname chromatogram
 setMethod("chromatogram", "sangerseq", 
   function(obj, trim5=0, trim3=0, 
            showcalls=c("primary", "secondary", "both", "none"), 
            width=100, height=2, cex.mtext=1, cex.base=1, ylim=3, 
            filename=NULL, showtrim=FALSE, showhets=TRUE) {
+    
     originalpar <- par(no.readonly=TRUE)
     showcalls <- showcalls[1]
     traces <- obj@traceMatrix
     basecalls1 <- unlist(strsplit(toString(obj@primarySeq), ""))
     basecalls2 <- unlist(strsplit(toString(obj@secondarySeq), ""))
     averagePosition <- rowMeans(obj@peakPosMatrix, na.rm=TRUE)
+    #sometimes there are more basecalls than peak matrix
+    #maybe a function to clean up the info from obj
     basecalls1 <- basecalls1[1:length(averagePosition)] 
     basecalls2 <- basecalls2[1:length(averagePosition)] 
     
@@ -164,23 +198,52 @@ setMethod("chromatogram", "sangerseq",
       averagePosition <- averagePosition[(1 + trim5):(length(averagePosition) - trim3)] 
     }
     
-    settings <- makeSettings(basecalls1, basecalls2, trim5, trim3, 
-                             averagePosition, traces, ylim, width)
+    indexes <- 1:length(basecalls1)
+    trimmed <- indexes <= trim5 | indexes > (length(basecalls1) - trim3) # all false if not trimmed
     
-    traces <- settings[["traces"]]
-    basecalls1 <- settings[["basecalls1"]] 
-    basecalls2 <- settings[["basecalls2"]]
-    averagePosition <- settings[["averagePosition"]]
-    ylims <- settings[["ylims"]]
-    startTrims <- settings[["startTrims"]]
-    endTrims <- settings[["endTrims"]] 
-    startHets <- settings[["startHets"]]
-    endHets <- settings[["endHets"]]
-    colorVector1 <- settings[["colorVector1"]] 
-    colorVector2 <- settings[["colorVector2"]]
-    traceWidth <- settings[["traceWidth"]]
-    breaks <- settings[["breaks"]]
-    numPlots <- settings[["numPlots"]]
+    if (!is.null(trim3)) {
+      traces <- traces[1:(min(max(averagePosition, na.rm=TRUE) + 10, 
+                              nrow(traces))), ]
+    }
+    if (!is.null(trim5)) {
+      offset <- max(c(1, averagePosition[1] - 10))
+      traces <- traces[offset:nrow(traces),]
+      averagePosition <- averagePosition - (offset-1)
+    }
+    
+    #midp starts startHets ends, etc. making the shaded boxes; make this its own function
+    #only the hets are shaded; without calling makeBaseCalls, it's all shaded
+    
+    #toggle between shading hets and showing quality scores (bar graph), maybe quality scores could be the default
+    #basically the shading would be different heights depending on how confident it is (do the shading behind)
+    #scale the quality scores to match the height of the graph
+    #maybe a y-axis on the right side to show the scale of the quality (find a way to have 2 y-axes)
+    
+    maxSignal <- apply(traces, 1, max)
+    ylims <- c(0, quantile(maxSignal, .75)+ylim*IQR(maxSignal))           
+    p <- c(0, averagePosition, nrow(traces))
+    midp <- diff(p)/2
+    starts <- averagePosition - midp[1:(length(midp)-1)]
+    startHets <- starts
+    startHets[basecalls1 == basecalls2] <- NA
+    ends <- averagePosition + midp[2:(length(midp))]
+    endHets <- ends
+    endHets[basecalls1 == basecalls2] <- NA
+    startTrims <- starts
+    startTrims[!trimmed] <- NA
+    endTrims <- ends
+    endTrims[!trimmed] <- NA
+    
+    colorTranslate <- c(A="green", C="blue", G="black", T="red")
+    colorVector1 <- unname(colorTranslate[basecalls1])
+    colorVector1[is.na(colorVector1)] <- "purple"
+    colorVector2 <- unname(colorTranslate[basecalls2])
+    colorVector2[is.na(colorVector2)] <- "purple"
+    
+    valuesPerBase <- nrow(traces)/length(basecalls1)
+    traceWidth <- width*valuesPerBase
+    breaks <- seq(1,nrow(traces), by=traceWidth)
+    numPlots <- length(breaks)
     
     if(!is.null(filename)) {
       pdf(filename, width=8.5, height=height*numPlots)
@@ -190,6 +253,7 @@ setMethod("chromatogram", "sangerseq",
     basecallwarning2 = 0
     j = 1
     
+    #try to see if there's a way to not use this loop
     for(i in breaks) {
       
       range <- averagePosition >= i & averagePosition < (i+traceWidth)
