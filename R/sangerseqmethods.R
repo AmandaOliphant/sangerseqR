@@ -192,9 +192,8 @@ setMethod("chromatogram", "sangerseq",
     basecalls2 <- basecalls2[1:length(averagePosition)] 
     
     if(showtrim == FALSE) {
-      trimResult <- removeTrim(basecalls1, basecalls2, trim5, trim3)
-      basecalls1 <- trimResult[["basecalls1"]]
-      basecalls2 <- trimResult[["basecalls2"]]
+      basecalls1 <- removeTrim(basecalls1, trim5, trim3)
+      basecalls2 <- removeTrim(basecalls2, trim5, trim3)
       averagePosition <- averagePosition[(1 + trim5):(length(averagePosition) - trim3)] 
     }
     

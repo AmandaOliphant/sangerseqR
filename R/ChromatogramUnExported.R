@@ -1,16 +1,9 @@
-removeTrim <- function(basecalls1, basecalls2, trim5, trim3) {
+removeTrim <- function(basecalls, trim5, trim3) {
   
-  if(trim5+trim3 > length(basecalls1)) {
-    basecalls1 <- ""
+  if(trim5+trim3 > length(basecalls)) {
+    basecalls <- ""
   } else {
-    basecalls1 <- basecalls1[(1 + trim5):(length(basecalls1) - trim3)]
+    basecalls <- basecalls[(1 + trim5):(length(basecalls) - trim3)]
   }
-  
-  if(trim5+trim3 > length(basecalls2)) {
-    basecalls2 <- ""
-  } else {
-    basecalls2 <- basecalls2[(1 + trim5):(length(basecalls2) - trim3)]
-  }
-  
-  return(list(basecalls1 = basecalls1, basecalls2 = basecalls2))
+  return(basecalls)
 }
