@@ -1,4 +1,5 @@
 #This is Logan
+#And this is Amanda
 #Implements the show generic 
 setMethod("show", "sangerseq",
   function(object) {
