@@ -1,3 +1,4 @@
+#This is Logan
 #Implements the show generic 
 setMethod("show", "sangerseq",
   function(object) {
