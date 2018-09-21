@@ -1,1 +1,2 @@
 BiocGenerics:::testPackage("sangerseqR")
+
