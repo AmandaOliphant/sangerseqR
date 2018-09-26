@@ -25,7 +25,7 @@ setMethod("sangerseq", "abif",
 
     orderedMatrix <- makeOrderedMatrix(obj)
     
-    basecalls1 = getBasecalls(obj@data$PBAS.2, obj@data$PLOC.2)
+    basecalls1 <- getBasecalls(obj@data$PBAS.2, obj@data$PLOC.2)
     basecallpositions1 <- obj@data$PLOC.2 + 1
     
     if(!is.null(obj@data$P2BA.1)) {
