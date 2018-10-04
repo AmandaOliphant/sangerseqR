@@ -130,7 +130,8 @@ setMethod("makeBaseCalls", "sangerseq",
         primary <- c(primary, Bases[1])
         secondary <- c(secondary, Bases[1])
       }
-    }  
+    }
+    #Logan - would it be possible to make each "for" loop a different function? 98-133
     obj@peakPosMatrix <- tempPosMatrix[rowSums(!is.na(tempPosMatrix)) > 0,]
     obj@peakAmpMatrix <- tempAmpMatrix[rowSums(!is.na(tempPosMatrix)) > 0,]
     obj@primarySeqID <- "sangerseq package primary basecalls"
@@ -140,6 +141,8 @@ setMethod("makeBaseCalls", "sangerseq",
     
     return(obj)
   }
+  #Logan - it looks like this function is mostly renaming things where the functional part is the for loop
+  #So we should be able to just separate the for loop out and keep the re-naming
 )
 
 setMethod("chromatogram", "character",
@@ -179,6 +182,7 @@ setMethod("chromatogram", "sangerseq",
            showcalls=c("primary", "secondary", "both", "none"), 
            width=100, height=2, cex.mtext=1, cex.base=1, ylim=3, 
            filename=NULL, showtrim=FALSE, showhets=TRUE) {
+    #Logan - 185-321 This function is massive!
     
     originalpar <- par(no.readonly=TRUE)
     showcalls <- showcalls[1]
