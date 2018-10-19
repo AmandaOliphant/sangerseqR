@@ -81,11 +81,9 @@ setMethod("makeBaseCalls", "sangerseq",
                primarypeaks[length(diffs)] + 0.5*diffs[length(diffs)]
     ) 
      
-    return(getMaxPeakValue(starts, stops, obj))
+    return(getMaxPeakValue(starts, stops, obj, ratio))
     
   }
-  #Logan - it looks like this function is mostly renaming things where the functional part is the for loop
-  #So we should be able to just separate the for loop out and keep the re-naming
 )
 
 setMethod("chromatogram", "character",
@@ -125,24 +123,15 @@ setMethod("chromatogram", "sangerseq",
            showcalls=c("primary", "secondary", "both", "none"), 
            width=100, height=2, cex.mtext=1, cex.base=1, ylim=3, 
            filename=NULL, showtrim=FALSE, showhets=TRUE) {
-    #Logan - 185-321 This function is massive!
     
     originalpar <- par(no.readonly=TRUE)
     showcalls <- showcalls[1]
     traces <- obj@traceMatrix
-    basecalls1 <- unlist(strsplit(toString(obj@primarySeq), ""))
-    basecalls2 <- unlist(strsplit(toString(obj@secondarySeq), ""))
     averagePosition <- rowMeans(obj@peakPosMatrix, na.rm=TRUE)
-    #sometimes there are more basecalls than peak matrix
-    #maybe a function to clean up the info from obj
-    basecalls1 <- basecalls1[1:length(averagePosition)] 
-    basecalls2 <- basecalls2[1:length(averagePosition)] 
     
-    if(showtrim == FALSE) {
-      basecalls1 <- removeTrim(basecalls1, trim5, trim3)
-      basecalls2 <- removeTrim(basecalls2, trim5, trim3)
-      averagePosition <- averagePosition[(1 + trim5):(length(averagePosition) - trim3)] 
-    }
+    basecalls <- getCleanedBasecalls(obj, showtrim, trim5, trim3, averagePosition);
+    basecalls1 <- basecalls[1];
+    basecalls2 <- basecalls[2];
     
     indexes <- 1:length(basecalls1)
     trimmed <- indexes <= trim5 | indexes > (length(basecalls1) - trim3) # all false if not trimmed
