@@ -127,11 +127,16 @@ setMethod("chromatogram", "sangerseq",
     originalpar <- par(no.readonly=TRUE)
     showcalls <- showcalls[1]
     traces <- obj@traceMatrix
+    basecalls1 <- unlist(strsplit(toString(obj@primarySeq), ""))
+    basecalls2 <- unlist(strsplit(toString(obj@secondarySeq), ""))
     averagePosition <- rowMeans(obj@peakPosMatrix, na.rm=TRUE)
     
-    basecalls <- getCleanedBasecalls(obj, showtrim, trim5, trim3, averagePosition);
-    basecalls1 <- basecalls[1];
-    basecalls2 <- basecalls[2];
+    basecalls1 <- cleanBasecalls(basecalls1, showtrim, trim5, trim3, averagePosition)
+    basecalls2 <- cleanBasecalls(basecalls2, showtrim, trim5, trim3, averagePosition)
+    
+    if(showtrim == FALSE) {
+      averagePosition <- averagePosition[(1 + trim5):(length(averagePosition) - trim3)] 
+    }
     
     indexes <- 1:length(basecalls1)
     trimmed <- indexes <= trim5 | indexes > (length(basecalls1) - trim3) # all false if not trimmed
