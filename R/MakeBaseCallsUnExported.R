@@ -13,6 +13,7 @@ getMaxPeakValue <- function(starts, stops, obj, ratio) {
   secondary <- NULL
   tempPosMatrix <- matrix(nrow=length(starts), ncol=4)
   tempAmpMatrix <- matrix(nrow=length(starts), ncol=4)
+  
   for(i in 1:length(starts)) {
     Apeak <- peakvalues(Apeaks, starts[i], stops[i])
     Cpeak <- peakvalues(Cpeaks, starts[i], stops[i])
@@ -57,5 +58,23 @@ getMaxPeakValue <- function(starts, stops, obj, ratio) {
   obj@secondarySeqID <- "sangerseq package secondary basecalls"
   obj@secondarySeq <- DNAString(paste(secondary, collapse=""))
   
+  return(obj)
+}
+
+makeBasePositions <- function(Apeak, Cpeak, Gpeak, Tpeak) {
+if(is.na(Apeak[2]) & 
+   is.na(Cpeak[2]) & 
+   is.na(Gpeak[2]) & 
+   is.na(Tpeak[2])) next #rare case where no peak found 
+signals <- c(Apeak[1], Cpeak[1], Gpeak[1], Tpeak[1])
+tempAmpMatrix[i,] <- signals
+positions <- c(Apeak[2], Cpeak[2], Gpeak[2], Tpeak[2])
+tempPosMatrix[i,] <- positions
+signalratios <- signals/max(signals, na.rm=TRUE)
+Bases <- c("A", "C", "G", "T")
+Bases[signalratios < ratio] <- NA
+#sort by decreasing signal strength
+Bases <- Bases[order(signals, decreasing=TRUE)] 
+positions <- positions[order(signals, decreasing=TRUE)]
   return(obj)
 }
