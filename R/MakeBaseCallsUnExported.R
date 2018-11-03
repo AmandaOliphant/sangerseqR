@@ -6,7 +6,8 @@ getMaxPeakValue <- function(starts, stops, obj, ratio) {
   Tpeaks <- getpeaks(obj@traceMatrix[,4])
   #hack for last peak. Just uses distance preceding peak 
   #as distance after peak
-  
+
+ 
   #Now get max peak value for each channel in each peak window. 
   #If no peak return 0 
   primary <- NULL
@@ -63,10 +64,7 @@ getMaxPeakValue <- function(starts, stops, obj, ratio) {
   return(obj)
 }
 
+makeBasePositions <- function(Apeaks, Cpeaks, Gpeaks, Tpeaks, starts, stops, tempAmpMatrix, tempPosMatrix, ratio, primary, secondary, obj) {
 
-
-
-makeBasePositions <- function(peaks, tempAmpMatrix, i, tempPosMatrix) {
-  
     return(obj)
 }
