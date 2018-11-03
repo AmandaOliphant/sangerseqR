@@ -19,6 +19,7 @@ getMaxPeakValue <- function(starts, stops, obj, ratio) {
     Cpeak <- peakvalues(Cpeaks, starts[i], stops[i])
     Gpeak <- peakvalues(Gpeaks, starts[i], stops[i])
     Tpeak <- peakvalues(Tpeaks, starts[i], stops[i])
+    
     if(is.na(Apeak[2]) & 
        is.na(Cpeak[2]) & 
        is.na(Gpeak[2]) & 
@@ -33,6 +34,7 @@ getMaxPeakValue <- function(starts, stops, obj, ratio) {
     #sort by decreasing signal strength
     Bases <- Bases[order(signals, decreasing=TRUE)] 
     positions <- positions[order(signals, decreasing=TRUE)]
+    
     if(length(Bases[!is.na(Bases)]) == 4 
        | length(Bases[!is.na(Bases)]) == 0) {
       primary <- c(primary, "N")
@@ -61,20 +63,10 @@ getMaxPeakValue <- function(starts, stops, obj, ratio) {
   return(obj)
 }
 
-makeBasePositions <- function(Apeak, Cpeak, Gpeak, Tpeak) {
-if(is.na(Apeak[2]) & 
-   is.na(Cpeak[2]) & 
-   is.na(Gpeak[2]) & 
-   is.na(Tpeak[2])) next #rare case where no peak found 
-signals <- c(Apeak[1], Cpeak[1], Gpeak[1], Tpeak[1])
-tempAmpMatrix[i,] <- signals
-positions <- c(Apeak[2], Cpeak[2], Gpeak[2], Tpeak[2])
-tempPosMatrix[i,] <- positions
-signalratios <- signals/max(signals, na.rm=TRUE)
-Bases <- c("A", "C", "G", "T")
-Bases[signalratios < ratio] <- NA
-#sort by decreasing signal strength
-Bases <- Bases[order(signals, decreasing=TRUE)] 
-positions <- positions[order(signals, decreasing=TRUE)]
-  return(obj)
+
+
+
+makeBasePositions <- function(peaks, tempAmpMatrix, i, tempPosMatrix) {
+  
+    return(obj)
 }
