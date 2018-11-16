@@ -53,18 +53,17 @@ getMaxPeakValue <- function(starts, stops, obj, ratio) {
       secondary <- c(secondary, Bases[1])
     }
   }
-  #Logan - would it be possible to make each "for" loop a different function? 98-133
-  obj@peakPosMatrix <- tempPosMatrix[rowSums(!is.na(tempPosMatrix)) > 0,]
-  obj@peakAmpMatrix <- tempAmpMatrix[rowSums(!is.na(tempPosMatrix)) > 0,]
-  obj@primarySeqID <- "sangerseq package primary basecalls"
-  obj@primarySeq <- DNAString(paste(primary, collapse=""))
-  obj@secondarySeqID <- "sangerseq package secondary basecalls"
-  obj@secondarySeq <- DNAString(paste(secondary, collapse=""))
-  
+  obj <- objectConsolidation(tempPosMatrix, tempAmpMatrix, DNAString, primary, secondary, obj)
   return(obj)
 }
 
-makeBasePositions <- function(Apeaks, Cpeaks, Gpeaks, Tpeaks, starts, stops, tempAmpMatrix, tempPosMatrix, ratio, primary, secondary, obj) {
-
-    return(obj)
-}
+ objectConsolidation<- function(tempPosMatrix, tempAmpMatrix, DNAString, primary, secondary, obj) {
+   
+   obj@peakPosMatrix <- tempPosMatrix[rowSums(!is.na(tempPosMatrix)) > 0,]
+   obj@peakAmpMatrix <- tempAmpMatrix[rowSums(!is.na(tempPosMatrix)) > 0,]
+   obj@primarySeqID <- "sangerseq package primary basecalls"
+   obj@primarySeq <- DNAString(paste(primary, collapse=""))
+   obj@secondarySeqID <- "sangerseq package secondary basecalls"
+   obj@secondarySeq <- DNAString(paste(secondary, collapse=""))
+   return(obj)
+ }
