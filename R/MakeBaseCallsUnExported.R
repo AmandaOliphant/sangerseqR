@@ -14,6 +14,7 @@ getMaxPeakValue <- function(starts, stops, obj, ratio) {
   secondary <- NULL
   tempPosMatrix <- matrix(nrow=length(starts), ncol=4)
   tempAmpMatrix <- matrix(nrow=length(starts), ncol=4)
+  obj <- setFrame(obj, starts)
   
   for(i in 1:length(starts)) {
     Apeak <- peakvalues(Apeaks, starts[i], stops[i])
@@ -67,3 +68,7 @@ getMaxPeakValue <- function(starts, stops, obj, ratio) {
    obj@secondarySeq <- DNAString(paste(secondary, collapse=""))
    return(obj)
  }
+ 
+
+ 
+ #named vector in R (dictonary in python)
