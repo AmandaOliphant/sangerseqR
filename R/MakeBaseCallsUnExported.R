@@ -1,4 +1,5 @@
 getMaxPeakValue <- function(starts, stops, obj, ratio) {
+  
   #get peaks for each base
   Apeaks <- getpeaks(obj@traceMatrix[,1])
   Cpeaks <- getpeaks(obj@traceMatrix[,2])

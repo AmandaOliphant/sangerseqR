@@ -60,8 +60,16 @@ setClass("sangerseq",
            secondarySeq="DNAString",
            traceMatrix="matrix",
            peakPosMatrix="matrix",
-           peakAmpMatrix="matrix"
-         )
+           peakAmpMatrix="matrix",
+           orderedMatrix="matrix",
+           basecalls1="character",
+           basecalls2="character",
+           basecallpositions1="matrix",
+           basecallpositions2="matrix",
+           diffs="matrix",
+           primaryPeaks="integer"
+          
+           )
 )
 
 #' @name abif-class
@@ -189,4 +197,7 @@ setClass("scf",
            private="raw"
          )
 )
+
+
+
 
