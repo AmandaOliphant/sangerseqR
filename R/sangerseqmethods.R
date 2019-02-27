@@ -131,8 +131,8 @@ setMethod("chromatogram", "sangerseq",
     basecalls2 <- unlist(strsplit(toString(obj@secondarySeq), ""))
     averagePosition <- rowMeans(obj@peakPosMatrix, na.rm=TRUE)#peakposmatrix (takes average of peak positions of all bases)
     
-    basecalls1 <- cleanBasecalls(basecalls1, showtrim, trim5, trim3, averagePosition)
-    basecalls2 <- cleanBasecalls(basecalls2, showtrim, trim5, trim3, averagePosition) #trims base calls
+    basecalls1 <- trimBasecalls(basecalls1, showtrim, trim5, trim3, averagePosition)
+    basecalls2 <- trimBasecalls(basecalls2, showtrim, trim5, trim3, averagePosition) #trims base calls
     
     if(showtrim == FALSE) {
       averagePosition <- averagePosition[(1 + trim5):(length(averagePosition) - trim3)] #move into trimBaseCalls and call function. 

@@ -1,4 +1,4 @@
-cleanBasecalls <- function(basecalls, showtrim, trim5, trim3, averagePosition) {
+trimBasecalls <- function(basecalls, showtrim, trim5, trim3, averagePosition) {
   
   #Sometimes there are more basecalls than peaks, so the basecalls need to be trimmed
   basecalls <- basecalls[1:length(averagePosition)] 
