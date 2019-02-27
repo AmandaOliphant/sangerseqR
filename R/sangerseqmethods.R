@@ -123,19 +123,19 @@ setMethod("chromatogram", "sangerseq",
            showcalls=c("primary", "secondary", "both", "none"), 
            width=100, height=2, cex.mtext=1, cex.base=1, ylim=3, 
            filename=NULL, showtrim=FALSE, showhets=TRUE) {
-    
-    originalpar <- par(no.readonly=TRUE)
-    showcalls <- showcalls[1]
-    traces <- obj@traceMatrix
-    basecalls1 <- unlist(strsplit(toString(obj@primarySeq), ""))
+    #need to check if argument is valid and throw up error if not. must be part of showcalls vector
+    originalpar <- par(no.readonly=TRUE)#parameters for graphics. saves what they were to set them back at end
+    showcalls <- showcalls[1] #grab the best value (or first) vector of all possible arguments that are allowed see 123
+    traces <- obj@traceMatrix #values of each laser shot acgt
+    basecalls1 <- unlist(strsplit(toString(obj@primarySeq), "")) #creates vector out of basically long word a,c,g,t from acgt
     basecalls2 <- unlist(strsplit(toString(obj@secondarySeq), ""))
-    averagePosition <- rowMeans(obj@peakPosMatrix, na.rm=TRUE)
+    averagePosition <- rowMeans(obj@peakPosMatrix, na.rm=TRUE)#peakposmatrix (takes average of peak positions of all bases)
     
     basecalls1 <- cleanBasecalls(basecalls1, showtrim, trim5, trim3, averagePosition)
-    basecalls2 <- cleanBasecalls(basecalls2, showtrim, trim5, trim3, averagePosition)
+    basecalls2 <- cleanBasecalls(basecalls2, showtrim, trim5, trim3, averagePosition) #trims base calls
     
     if(showtrim == FALSE) {
-      averagePosition <- averagePosition[(1 + trim5):(length(averagePosition) - trim3)] 
+      averagePosition <- averagePosition[(1 + trim5):(length(averagePosition) - trim3)] #move into trimBaseCalls and call function. 
     }
     
     indexes <- 1:length(basecalls1)

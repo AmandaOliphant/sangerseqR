@@ -70,6 +70,9 @@ setClass("sangerseq",
            primaryPeaks="integer"
           
            )
+#setClass("chromatogram")
+
+#plot function
 )
 
 #' @name abif-class
