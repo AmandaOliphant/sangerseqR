@@ -399,3 +399,10 @@ setMethod("secondarySeqID<-", "sangerseq",
     obj@secondarySeqID <- value 
     obj
   })
+
+updateFinalObj <- function(obj, sangerseq) {
+    if (identical("obj", "objUpdate")) {
+      stop("No Change", obj, call. = FALSE)
+    #else (rebind)
+    }
+  }
