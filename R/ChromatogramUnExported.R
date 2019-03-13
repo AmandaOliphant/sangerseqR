@@ -17,3 +17,12 @@ removeTrim <- function(basecalls, trim5, trim3) {
   }
   return(basecalls)
 }
+
+chromatogramColor <- function(obj, colorTranslate, colorVector1, colorVector2) {
+  colorTranslate <- c(A="green", C="blue", G="black", T="red")
+  colorVector1 <- unname(colorTranslate[basecalls1])
+  colorVector1[is.na(colorVector1)] <- "purple"
+  colorVector2 <- unname(colorTranslate[basecalls2])
+  colorVector2[is.na(colorVector2)] <- "purple"
+  return(obj)
+}

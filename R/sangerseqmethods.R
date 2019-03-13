@@ -174,11 +174,12 @@ setMethod("chromatogram", "sangerseq",
     endTrims <- ends
     endTrims[!trimmed] <- NA
     
-    colorTranslate <- c(A="green", C="blue", G="black", T="red")
-    colorVector1 <- unname(colorTranslate[basecalls1])
-    colorVector1[is.na(colorVector1)] <- "purple"
-    colorVector2 <- unname(colorTranslate[basecalls2])
-    colorVector2[is.na(colorVector2)] <- "purple"
+    obj <- chromatogramColor(obj, colorTranslate, colorVector1, colorVector2)
+    #colorTranslate <- c(A="green", C="blue", G="black", T="red")
+    #colorVector1 <- unname(colorTranslate[basecalls1])
+    #colorVector1[is.na(colorVector1)] <- "purple"
+    #colorVector2 <- unname(colorTranslate[basecalls2])
+    #colorVector2[is.na(colorVector2)] <- "purple"
     
     valuesPerBase <- nrow(traces)/length(basecalls1)
     traceWidth <- width*valuesPerBase
@@ -258,6 +259,8 @@ setMethod("chromatogram", "sangerseq",
     else par(originalpar)
   }
 )
+
+
 
 #' @rdname setAllelePhase
 setMethod("setAllelePhase", "sangerseq",
