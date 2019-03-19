@@ -403,9 +403,14 @@ setMethod("secondarySeqID<-", "sangerseq",
     obj
   })
 
-updateFinalObj <- function(obj, sangerseq) {
+updateFinalObj <- function(obj, newObj) {
     if (identical("obj", "objUpdate")) {
       stop("No Change", obj, call. = FALSE)
-    #else (rebind)
+    }
+    else if (exists(obj, envir = "sangerseq", inherits = FALSE)) {
+      assign(obj, newObj, envir = "sangerseq")
+    } 
+    else {
+      rebind(obj, newObj, parent.env("sangerseq"))
     }
   }
