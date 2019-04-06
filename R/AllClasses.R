@@ -58,6 +58,9 @@ setClass("sangerseq",
            primarySeq="DNAString",
            secondarySeqID="character",
            secondarySeq="DNAString",
+           allele1="DNAString",
+           allele2="DNAString",
+           ref="DNAString",
            traceMatrix="matrix",
            peakPosMatrix="matrix",
            peakAmpMatrix="matrix",
@@ -68,7 +71,7 @@ setClass("sangerseq",
            basecallpositions2="matrix",
            diffs="matrix",
            primaryPeaks="integer"
-          
+           
            )
 #setClass("chromatogram")
 

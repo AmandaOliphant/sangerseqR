@@ -47,14 +47,19 @@ cleanstring <- function(string) {
 alignchromatogram <- function(data, block.width=50, trim=FALSE, refseq, trim5, trim3) {
   if (is.null(data)) return(NULL)
   d <- setAllelePhase(data, refseq, trim5, trim3)
-  refseq <- toString(d@primarySeq)
+  allele1 <- copy(primarySeq)
+  allele2 <- copy(secondarySeq)
+  refseq <- toString(d@allele1)
   altseq <- toString(d@secondarySeq)
+  #refseq <- toString(d@primarySeq)
+  #altseq <- toString(d@secondarySeq)
   if (trim == TRUE) {
     altseq <- toString(d@secondarySeq[(trim5 + 1):(nchar(altseq) - trim3)])
   }
   names(altseq) <- "Alt Allele"
   names(refseq) <- d@primarySeqID
   if (trim == TRUE) {
+    msa <- 
     pa <- pairwiseAlignment(altseq, refseq, type="local", gapExtension=-2)
   } else {
     pa <- pairwiseAlignment(altseq, refseq, type="global", gapExtension=-2)
