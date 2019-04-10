@@ -50,7 +50,7 @@ alignchromatogram <- function(data, block.width=50, trim=FALSE, refseq, trim5, t
   allele1 <- copy(primarySeq)
   allele2 <- copy(secondarySeq)
   refseq <- toString(d@allele1)
-  altseq <- toString(d@secondarySeq)
+  altseq <- toString(d@allele2)
   #refseq <- toString(d@primarySeq)
   #altseq <- toString(d@secondarySeq)
   if (trim == TRUE) {
