@@ -64,7 +64,9 @@ alignchromatogram <- function(data, block.width=50, trim=FALSE, refseq, trim5, t
   } else {
     pa <- pairwiseAlignment(altseq, refseq, type="global", gapExtension=-2)
   }
-  alignment <- paste(capture.output(writePairwiseAlignments(pa, block.width=block.width)), collapse="\n")
-  results <- list(altseq=altseq, refseq=gsub("-", "", refseq), alignment=alignment)
+  alignment <- paste(capture.output())
+  #alignment <- paste(capture.output(writePairwiseAlignments(pa, block.width=block.width)), collapse="\n")
+  #results <- list(altseq=altseq, refseq=gsub("-", "", refseq), alignment=alignment)
+  results <- list(altseq=allele2, refseq=gsub("-", "", allele1), alignment=alignment)
   return(results)
 }
