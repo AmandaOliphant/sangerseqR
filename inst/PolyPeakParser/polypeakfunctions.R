@@ -56,7 +56,7 @@ alignchromatogram <- function(data, block.width=50, trim=FALSE, refseq, trim5, t
   if (trim == TRUE) {
     altseq <- toString(d@secondarySeq[(trim5 + 1):(nchar(altseq) - trim3)])
   }
-  names(altseq) <- "Alt Allele"
+  names(altseq) <- "Allele 2"
   names(refseq) <- d@primarySeqID
   if (trim == TRUE) {
     msa <- 

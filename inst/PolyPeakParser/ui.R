@@ -66,9 +66,11 @@ shinyUI(pageWithSidebar(
                            downloadButton('downloadData', 'Download PDF Report'),
                            tags$h4("Alignment"), 
                            verbatimTextOutput('alignment'),
-                           tags$h4("Reference Sequence"), 
+                           #tags$h4("Reference Sequence"), 
+                           tags$h4("Allele 1"),
                            verbatimTextOutput('refseq'), 
-                           tags$h4("Alternate Allele"), 
+                           #tags$h4("Alternate Allele"), 
+                           tags$h4("Allele 2"),
                            verbatimTextOutput('altseq'),
                            tags$h4("Alignment Header"), 
                            verbatimTextOutput('header')
