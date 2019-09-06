@@ -129,7 +129,7 @@ read.scf <- function (filename)
 #' @return \code{\link{abif}} s4 object
 #' 
 #' @references Charif, D. and Lobry, J.R. (2007) SeqinR 1.0-2: a contributed
-#' package to teh R project for statistical computing devoted to biological
+#' package to the R project for statistical computing devoted to biological
 #' sequences retrieval and analysis. Structural approches to sequenc eevolution:
 #' Molecules, networks, populations. pp. 207-232.
 #' 
