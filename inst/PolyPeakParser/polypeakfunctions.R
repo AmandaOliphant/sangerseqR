@@ -22,7 +22,7 @@ figheight <- function(obj, trim5=0, trim3=0, width=100, pixelsperrow=200, showtr
     traces <- traces[offset:nrow(traces),]
     aveposition <- aveposition - (offset-1)
   }
- 
+  
   valuesperbase <- nrow(traces)/length(basecalls1)
   tracewidth <- width*valuesperbase
   breaks <- seq(1,nrow(traces), by=tracewidth) 
@@ -47,26 +47,19 @@ cleanstring <- function(string) {
 alignchromatogram <- function(data, block.width=50, trim=FALSE, refseq, trim5, trim3) {
   if (is.null(data)) return(NULL)
   d <- setAllelePhase(data, refseq, trim5, trim3)
-  allele1 <- copy(primarySeq)
-  allele2 <- copy(secondarySeq)
-  refseq <- toString(d@allele1)
-  altseq <- toString(d@allele2)
-  #refseq <- toString(d@primarySeq)
-  #altseq <- toString(d@secondarySeq)
+  refseq <- toString(d@primarySeq)
+  altseq <- toString(d@secondarySeq)
   if (trim == TRUE) {
     altseq <- toString(d@secondarySeq[(trim5 + 1):(nchar(altseq) - trim3)])
   }
-  names(altseq) <- "Allele 2"
+  names(altseq) <- "Alt Allele"
   names(refseq) <- d@primarySeqID
   if (trim == TRUE) {
-    msa <- 
     pa <- pairwiseAlignment(altseq, refseq, type="local", gapExtension=-2)
   } else {
     pa <- pairwiseAlignment(altseq, refseq, type="global", gapExtension=-2)
   }
-  alignment <- paste(capture.output())
-  #alignment <- paste(capture.output(writePairwiseAlignments(pa, block.width=block.width)), collapse="\n")
-  #results <- list(altseq=altseq, refseq=gsub("-", "", refseq), alignment=alignment)
-  results <- list(altseq=allele2, refseq=gsub("-", "", allele1), alignment=alignment)
+  alignment <- paste(capture.output(writePairwiseAlignments(pa, block.width=block.width)), collapse="\n")
+  results <- list(altseq=altseq, refseq=gsub("-", "", refseq), alignment=alignment)
   return(results)
 }

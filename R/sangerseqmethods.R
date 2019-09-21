@@ -22,6 +22,12 @@ setMethod("show", "sangerseq",
 setMethod("sangerseq", "abif", 
   function(obj) {
     res <- new("sangerseq")
+    
+    tracematrix <- matrix(c(obj@data$DATA.9, 
+                            obj@data$DATA.10, 
+                            obj@data$DATA.11, 
+                            obj@data$DATA.12), 
+                          ncol=4)
 
     orderedMatrix <- makeOrderedMatrix(obj)
     
@@ -29,7 +35,7 @@ setMethod("sangerseq", "abif",
     basecallpositions1 <- obj@data$PLOC.2 + 1
     
     if(!is.null(obj@data$P2BA.1)) {
-      basecalls2 = getBasecalls(obj@data$P2BA.1, obj@data$PLOC.2)
+     basecalls2 = getBasecalls(obj@data$P2BA.1, obj@data$PLOC.2)
       basecallpositions2 <-obj@data$PLOC.2 + 1
     } 
     else {
@@ -174,12 +180,12 @@ setMethod("chromatogram", "sangerseq",
     endTrims <- ends
     endTrims[!trimmed] <- NA
     
-    obj <- chromatogramColor(obj, colorTranslate, colorVector1, colorVector2)
-    #colorTranslate <- c(A="green", C="blue", G="black", T="red")
-    #colorVector1 <- unname(colorTranslate[basecalls1])
-    #colorVector1[is.na(colorVector1)] <- "purple"
-    #colorVector2 <- unname(colorTranslate[basecalls2])
-    #colorVector2[is.na(colorVector2)] <- "purple"
+    #obj <- chromatogramColor(obj, colorTranslate, colorVector1, colorVector2, basecalls1, basecalls2)
+    colorTranslate <- c(A="green", C="blue", G="black", T="red")
+    colorVector1 <- unname(colorTranslate[basecalls1])
+    colorVector1[is.na(colorVector1)] <- "purple"
+    colorVector2 <- unname(colorTranslate[basecalls2])
+    colorVector2[is.na(colorVector2)] <- "purple"
     
     valuesPerBase <- nrow(traces)/length(basecalls1)
     traceWidth <- width*valuesPerBase
@@ -225,31 +231,31 @@ setMethod("chromatogram", "sangerseq",
       lines(traces[plotRange,4], col="red")
       mtext(as.character(which(range)[1]), side=2, line=0, cex=cex.mtext)
       
-      obj <- alignBaseCalls(obj, showcalls, basecallwarning1, basecallwarning2)
+      #obj <- alignBaseCalls(obj, showcalls, basecallwarning1, basecallwarning2)
 
-      #for(k in 1:length(lab1)) {
-      #  if (showcalls=="primary" | showcalls=="both") {
-      #    if (is.na(basecalls1[1]) & basecallwarning1==0) {
-      #      warning("Primary basecalls missing")
-      #      basecallwarning1 = 1
-      #    } 
-      #    else if (length(lab1) > 0) {   
-      #      axis(side=3, at=pos[k], labels=lab1[k], col.axis=colors1[k], 
-      #           family="mono", cex=cex.base, line=ifelse(showcalls=="both", 0, 
-      #                                                    -1), tick=FALSE)
-      #    }
-      #  }
-      #  if (showcalls=="secondary" | showcalls=="both") {
-      #    if (is.na(basecalls2[1]) & basecallwarning2 == 0) {
-      #      warning("Secondary basecalls missing")
-      #      basecallwarning2 = 1
-      #    } 
-      #    else if (length(lab2) > 0) { 
-      #      axis(side=3, at=pos[k], labels=lab2[k], col.axis=colors2[k], 
-      #           family="mono", cex=cex.base, line=-1, tick=FALSE)
-      #    }
-      #  }
-      #}
+      for(k in 1:length(lab1)) {
+        if (showcalls=="primary" | showcalls=="both") {
+          if (is.na(basecalls1[1]) & basecallwarning1==0) {
+            warning("Primary basecalls missing")
+            basecallwarning1 = 1
+          } 
+          else if (length(lab1) > 0) {   
+            axis(side=3, at=pos[k], labels=lab1[k], col.axis=colors1[k], 
+                 family="mono", cex=cex.base, line=ifelse(showcalls=="both", 0, 
+                                                          -1), tick=FALSE)
+          }
+        }
+        if (showcalls=="secondary" | showcalls=="both") {
+          if (is.na(basecalls2[1]) & basecallwarning2 == 0) {
+            warning("Secondary basecalls missing")
+            basecallwarning2 = 1
+          } 
+          else if (length(lab2) > 0) { 
+            axis(side=3, at=pos[k], labels=lab2[k], col.axis=colors2[k], 
+                 family="mono", cex=cex.base, line=-1, tick=FALSE)
+          }
+        }
+      }
       j = j + 1
     }
     
