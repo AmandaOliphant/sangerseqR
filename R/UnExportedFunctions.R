@@ -29,7 +29,7 @@ SInt16 <- function(f, n=length(f)/2) readBin(f, what = "integer",
                                              signed = TRUE, endian = "big", 
                                              size = 2, n=n)
 SInt8 <- function(f, n=length(f)) readBin(f, what = "integer", signed = TRUE, 
-                                  endian = "big", size = 1, n=n)
+                                          endian = "big", size = 1, n=n)
 UInt32 <- function(f, n=length(f)/4) readBin(f, what = "integer", 
                                              signed = FALSE, endian = "big", 
                                              size = 4, n=n)
@@ -37,7 +37,7 @@ UInt16 <- function(f, n=length(f)/2) readBin(f, what = "integer",
                                              signed = FALSE, endian = "big", 
                                              size = 2, n=n)
 UInt8 <- function(f, n=length(f)) readBin(f, what = "integer", signed = FALSE, 
-                                  endian = "big", size = 1, n=n)
+                                          endian = "big", size = 1, n=n)
 f32 <- function(f, n=length(f)/4) readBin(f, what = "numeric", size = 4, n=n)
 f64 <- function(f, n=length(f)/8) readBin(f, what = "numeric", size = 8, n=n)
 
@@ -61,4 +61,3 @@ convertPoints <- function(rawdata) {
   }
   return(rawdata)
 }
-
