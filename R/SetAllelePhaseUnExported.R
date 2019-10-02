@@ -52,7 +52,8 @@ determineRefStrand <- function(refSeq, basecalls, trim5, trim3) {
                           gapOpening=-200, gapExtension=-10)
   paRC <- pairwiseAlignment(seedSeq, reverseComplement(DNAString(refSeq)), 
                             type="local", gapOpening=-200, gapExtension=-10)
-  refStrand <- "Reference"
+  refStrand <- "Allele 2"
+  #refStrand <- "Reference"
   if(score(paRC) > score(pa)) {
     refSeq <- toString(reverseComplement(refSeq))
     pa <- paRC

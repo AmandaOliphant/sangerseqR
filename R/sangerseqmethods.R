@@ -171,11 +171,12 @@ setMethod("chromatogram", "sangerseq",
             endtrims <- ends
             endtrims[!trimmed] <- NA
             
+            #obj <- chromatogramColor(obj, colorTranslate, colorVector1, colorVector2, basecalls1, basecalls2)
             colortranslate <- c(A="green", C="blue", G="black", T="red")
-            colorvector1 <- unname(colortranslate[basecalls1])
-            colorvector1[is.na(colorvector1)] <- "purple"
-            colorvector2 <- unname(colortranslate[basecalls2])
-            colorvector2[is.na(colorvector2)] <- "purple"
+            colorVector1 <- unname(colortranslate[basecalls1])
+            colorVector1[is.na(colorVector1)] <- "purple"
+            colorVector2 <- unname(colortranslate[basecalls2])
+            colorVector2[is.na(colorVector2)] <- "purple"
             
             valuesperbase <- nrow(traces)/length(basecalls1)
             tracewidth <- width*valuesperbase
@@ -196,8 +197,8 @@ setMethod("chromatogram", "sangerseq",
               lab1 <- basecalls1[range]
               lab2 <- basecalls2[range]
               pos <- aveposition[range] - tracewidth*(j-1)
-              colors1 <- colorvector1[range]
-              colors2 <- colorvector2[range]
+              colors1 <- colorVector1[range]
+              colors2 <- colorVector2[range]
               starttrim <- starttrims[range] - tracewidth*(j-1)
               endtrim <- endtrims[range] - tracewidth*(j-1)
               plotrange <- i:min(i+tracewidth, nrow(traces))
